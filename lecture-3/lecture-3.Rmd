@@ -1,0 +1,79 @@
+---
+title: "lecture-3"
+author: "Gia Bao (Belinda) Ngo"
+output: github_document
+---
+
+# Lecture 3: Data visualization
+
+## `ggplot`: Grammar of Graphics
+
+We can follow a general template: `ggplot(data = <DATA>) + <GEOM_FUNCTION>(mapping = aes(<MAPPINGS>))`
+
+For instance, we may be concerned about a group of outliers:
+
+```{r}
+library(tidyverse)
+ggplot(data = mpg) +
+  geom_point(mapping = aes(x = displ, y = hwy, color = class))
+```
+
+```{r}
+ggplot(data = mpg) +
+  geom_point(mapping = aes(x = displ, y = hwy, color = class, shape = factor(cyl)))
+```
+
+We can also simplify the command by assuming the right *named* arguments: `ggplot(mpg) + geom_point(aes(x = displ, y = hwy, color = class, shape = factor(cyl)))`
+
+```{r}
+ggplot(mpg) +
+  geom_point(aes(x = displ, y = hwy, color = class, shape = factor(cyl))) +
+  geom_smooth(aes(x = displ, y = hwy))
+```
+
+To avoid redundancies, we can declare **shared mappings** in `ggplot`: `ggplot(mpg, aes(x = displ, y = hwy)) + geom_point(aes(color = class, shape = factor(cyl))) + geom_smooth()`
+
+Each `geom_function` can have its own mappings: coloring by `drv`
+
+```{r}
+ggplot(mpg, aes(x = displ, y = hwy)) +
+  geom_point(aes(color = drv, shape = factor(cyl))) +
+  geom_smooth(aes(color = drv), se = FALSE)
+```
+
+We don't need to specify an aesthetic to group values:
+
+```{r}
+ggplot(mpg, aes(x = displ, y = hwy)) +
+  geom_point(aes(color = drv, shape = factor(cyl))) +
+  geom_smooth(aes(group = drv))
+```
+
+```{r}
+ggplot(mpg, aes(x = displ, y = hwy)) +
+  geom_point(aes(color = drv)) +
+  geom_smooth(aes(color = drv, linetype = drv), se = FALSE)
+```
+
+**Facets** are another useful way to add variables to a plot:
+
+```{r}
+ggplot(mpg, aes(x = displ, y = hwy)) +
+  geom_point(aes(color = drv)) +
+  facet_wrap(~ class)
+```
+
+For two variables, we can use `facet_grid`:
+
+```{r}
+ggplot(mpg, aes(x = displ, y = hwy)) +
+  geom_point(aes(color = class)) +
+  facet_grid(drv ~ cyl)
+```
+
+```{r}
+ggplot(mpg, aes(x = displ, y = hwy)) +
+  geom_point(aes(color = cyl)) +
+  geom_smooth(se = FALSE) +
+  facet_wrap(~ drv)
+```
