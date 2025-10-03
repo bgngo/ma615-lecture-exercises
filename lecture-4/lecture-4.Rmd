@@ -1,0 +1,90 @@
+---
+title: "lecture-4"
+author: "Gia Bao (Belinda) Ngo"
+output: github_document
+---
+
+# Lecture 4: Data visualization 2
+
+## Visualization with `ggplot`
+
+``` {r diamonds}
+library(tidyverse)
+diamonds
+```
+
+The summary for `geom_bar` is a count.
+
+``` {r geom_bar}
+ggplot(diamonds) + geom_bar(aes(x = cut))
+```
+
+## Statistical transformations
+
+``` {r statistical transformations}
+# use `after_stat` for computed variables
+ggplot(diamonds) +
+  stat_count(aes(x = cut, y = after_stat(prop), group = TRUE))
+
+# other summaries
+ggplot(diamonds) +
+  stat_summary(aes(x = cut, y = price), fun = mean, geom = "bar")
+
+# rough box plot
+ggplot(diamonds) +
+  stat_summary(aes(x = cut, y = depth), fun = median, fun.min = min, fun.max = max)
+```
+
+## Position adjustments
+
+``` {r position for bars}
+# default position: stacking
+ggplot(diamonds) +
+  geom_bar(aes(x = cut, fill = clarity))
+ggplot(diamonds) +
+  geom_bar(aes(x = cut, fill = clarity), position = "dodge")
+
+# change `position` to compare proportions
+ggplot(diamonds) +
+  geom_bar(aes(x = cut, fill = clarity), position = "fill")
+```
+
+``` {r position for points}
+# displ vs. hwy
+ggplot(mpg, aes(x = displ, y = hwy)) +
+  geom_point()
+ggplot(mpg, aes(x = displ, y = hwy)) +
+  geom_point(position = "jitter")
+
+# cyl vs. hwy
+ggplot(mpg, aes(x = cyl, y = hwy)) +
+  geom_point(alpha = 0.3)
+ggplot(mpg, aes(x = cyl, y = hwy)) +
+  geom_point(position = "jitter")
+```
+
+``` {r crossbars}
+ggplot(mpg, aes(x = drv, y = hwy)) +
+  geom_point(position = "jitter") +
+  stat_summary(fun.data = median_hilow, geom = "crossbar", color = "red")
+```
+
+Skewed RIGHT!
+
+## Coordinate systems
+
+``` {r coord_flip}
+ggplot(mpg, aes(class, hwy)) +
+  geom_boxplot()
+ggplot(mpg, aes(class, hwy)) +
+  geom_boxplot() +
+  coord_flip()
+```
+
+``` {r Cartesian vs. polar systems}
+ggplot(diamonds) +
+  geom_bar(aes(x = cut, fill = clarity))
+ggplot(diamonds) +
+  geom_bar(aes(x = cut, fill = clarity)) +
+  coord_polar()
+```
